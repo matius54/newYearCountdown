@@ -10,12 +10,17 @@
             font-family: Consolas;
             font-size: min(2vw, 20px);
         }
-
+        body {
+            height: 100dvh;
+            width: 100%;
+            margin: 0;
+        }
         .clock {
             position: relative;
             letter-spacing: 7px;
         }
         .countdown {
+            display: flex;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -26,6 +31,37 @@
         .color {
             color: #17D4FE;
         }
+        .digitCnt {
+            font-size: 60px;
+            height: 1em;
+            width: min-content;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            margin: 0;
+        }
+        .digitCnt .digit {
+            color: #17D4FE;
+            display: flex;
+            flex-direction: column;
+            transition: transform 500ms ease-in-out;
+        }
+        .digitCnt .digit span {
+            margin: 0;
+        }
+        .fireworks {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .endFireworks {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin: 1rem;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -35,11 +71,61 @@
     <div>
         Faltan <span id="daysLeft" class="color"></span> días para <span id="newYear"></span>.
     </div>
-    <div class="countdown color" id="countdown">
-        
     </div>
+    <div class="countdown">
+        <div class="days"></div>
+        <span class="digitCnt color">:</span>
+        <div class="hours"></div>
+        <span class="digitCnt color">:</span>
+        <div class="minutes"></div>
+        <span class="digitCnt color">:</span>
+        <div class="seconds"></div>
+        <span class="digitCnt color">:</span>
+        <span class="miliseconds digitCnt color">000</span>
+    </div>
+    <button class="endFireworks">Terminar celebracion</button>
+    <div class="fireworks"></div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+<script src="./number.js"></script>
 <script>
+    const days = new Dnumber(document.querySelector(".countdown .days"), "000")
+    const hours = new Dnumber(document.querySelector(".countdown .hours"), "00")
+    const minutes = new Dnumber(document.querySelector(".countdown .minutes"), "00")
+    const seconds = new Dnumber(document.querySelector(".countdown .seconds"), "00")
+    const miliseconds = document.querySelector(".countdown .miliseconds")
+
+    class CelebracionHandler {
+        constructor(element){
+            this.fireworks = new Fireworks.default(document.querySelector(".fireworks"))
+            element.addEventListener("click", ()=>this.toggle())
+            this.element = element
+            this.active = false
+            this.toggle()
+        }
+        toggleVisibility(){
+            return this.element.toggleAttribute("hidden")
+        }
+        toggle(){
+            const element = this.element
+            if(this.active){
+                element.innerText = "Terminar celebracion"
+                this.fireworks.start()
+            }else{
+                element.innerText = "Reanudar celebracion"
+                this.fireworks.stop()
+            }
+            this.active = !this.active
+            return this.active
+        }
+    }
+
+    const CH = new CelebracionHandler(document.querySelector("button"))
+
+    function padNumber(number, pading){
+        return number.toString().padStart(pading,"0")
+    }
+
     function showTime(){
         let date = new Date();
         
@@ -51,6 +137,7 @@
         let s = date.getSeconds(); // 0 - 59
         let ms = date.getMilliseconds(); //0 - 1000
         let session = "AM"; //AM | PM
+
         let localUnixTime = date.getTime();
         let newYearUnixTime = new Date(`${YYYY+1}-01-01T00:00:00`).getTime();
         let unixDiff = newYearUnixTime-localUnixTime;
@@ -69,26 +156,35 @@
         h = (h < 10) ? "0" + h : h;
         m = (m < 10) ? "0" + m : m;
         s = (s < 10) ? "0" + s : s;
+
         let div = (ms>=500)? ":" : " ";
         let time = `${DD}/${MM}/${YYYY} ${h}${div}${m}${div}${s}${div}${ms} ${session}`;
         let timeDiff = `${
         Math.floor(unixDiff/86400000)
         }:${
-        ("0" + Math.floor(unixDiff/3600000)%60).slice(-2)
+        padNumber(Math.floor(unixDiff/3600000)%60,2)
         }:${
-        ("0" + Math.floor(unixDiff/60000)%60).slice(-2)
+        padNumber(Math.floor(unixDiff/60000)%60,2)
         }:${
-        ("0" + Math.floor(unixDiff/1000)%60).slice(-2)
+        padNumber(Math.floor(unixDiff/1000)%60,2)
         }:${
-        ("00" + unixDiff%1000).slice(-3)
+        padNumber(unixDiff%1000,3)
         }`;
+
+        days.update(Math.floor(unixDiff/86400000))
+        hours.update(padNumber(Math.floor(unixDiff/3600000)%60,2))
+        minutes.update(padNumber(Math.floor(unixDiff/60000)%60,2))
+        seconds.update(padNumber(Math.floor(unixDiff/1000)%60,2))
+        miliseconds.innerText = padNumber(unixDiff%1000,3)
+        //miliseconds.update(padNumber(unixDiff%1000,3))
+
         document.getElementById("MyClockDisplay").innerText = time;
         document.getElementById("MyClockDisplay").textContent = time;
         document.getElementById("newYear").textContent = YYYY + 1;
         document.getElementById("daysLeft").textContent = daysDiff;
-        document.getElementById("countdown").textContent = timeDiff;
-        setTimeout(showTime, 20);
+        //document.getElementById("countdown").textContent = timeDiff;
     }
-    showTime();
+
+    setInterval(showTime, 15);
 </script>
 </html>
