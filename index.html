@@ -127,64 +127,49 @@
     }
 
     function showTime(){
-        let date = new Date();
+        let date = new Date()
         
-        let DD = date.getDate(); //1 - 31
-        let MM = date.getMonth() + 1; //1 - 12
-        let YYYY = date.getFullYear(); // 1700 - 2199
-        let h = date.getHours(); // 0 - 23
-        let m = date.getMinutes(); // 0 - 59
-        let s = date.getSeconds(); // 0 - 59
-        let ms = date.getMilliseconds(); //0 - 1000
-        let session = "AM"; //AM | PM
+        let DD = date.getDate() //1 - 31
+        let MM = date.getMonth() + 1 //1 - 12
+        let YYYY = date.getFullYear() // 1700 - 2199
+        let h = date.getHours() // 0 - 23
+        let m = date.getMinutes() // 0 - 59
+        let s = date.getSeconds() // 0 - 59
+        let ms = date.getMilliseconds() //0 - 1000
+        let session = "AM" //AM | PM
 
-        let localUnixTime = date.getTime();
-        let newYearUnixTime = new Date(`${YYYY+1}-01-01T00:00:00`).getTime();
-        let unixDiff = newYearUnixTime-localUnixTime;
-        let daysDiff = (unixDiff/1000/60/60/24).toFixed(8);
-        //let dLeft = 
+        let localUnixTime = date.getTime()
+        let newYearUnixTime = new Date(`${YYYY+1}-01-01T00:00:00`).getTime()
+        let unixDiff = newYearUnixTime-localUnixTime
+        let daysDiff = (unixDiff/1000/60/60/24).toFixed(8)
             
         if(h == 0){
-            h = 12;
+            h = 12
         }
         
         if(h > 12){
-            h = h - 12;
-            session = "PM";
+            h = h - 12
+            session = "PM"
         }
         
-        h = (h < 10) ? "0" + h : h;
-        m = (m < 10) ? "0" + m : m;
-        s = (s < 10) ? "0" + s : s;
+        h = (h < 10) ? "0" + h : h
+        m = (m < 10) ? "0" + m : m
+        s = (s < 10) ? "0" + s : s
 
-        let div = (ms>=500)? ":" : " ";
-        let time = `${DD}/${MM}/${YYYY} ${h}${div}${m}${div}${s}${div}${ms} ${session}`;
-        let timeDiff = `${
-        Math.floor(unixDiff/86400000)
-        }:${
-        padNumber(Math.floor(unixDiff/3600000)%60,2)
-        }:${
-        padNumber(Math.floor(unixDiff/60000)%60,2)
-        }:${
-        padNumber(Math.floor(unixDiff/1000)%60,2)
-        }:${
-        padNumber(unixDiff%1000,3)
-        }`;
+        let div = (ms>=500)? ":" : " "
+        let time = `${DD}/${MM}/${YYYY} ${h}${div}${m}${div}${s}${div}${ms} ${session}`
 
         days.update(Math.floor(unixDiff/86400000))
         hours.update(padNumber(Math.floor(unixDiff/3600000)%60,2))
         minutes.update(padNumber(Math.floor(unixDiff/60000)%60,2))
         seconds.update(padNumber(Math.floor(unixDiff/1000)%60,2))
         miliseconds.innerText = padNumber(unixDiff%1000,3)
-        //miliseconds.update(padNumber(unixDiff%1000,3))
 
-        document.getElementById("MyClockDisplay").innerText = time;
-        document.getElementById("MyClockDisplay").textContent = time;
-        document.getElementById("newYear").textContent = YYYY + 1;
-        document.getElementById("daysLeft").textContent = daysDiff;
-        //document.getElementById("countdown").textContent = timeDiff;
+        document.getElementById("MyClockDisplay").innerText = time
+        document.getElementById("newYear").textContent = YYYY + 1
+        document.getElementById("daysLeft").textContent = daysDiff
     }
 
-    setInterval(showTime, 15);
+    setInterval(showTime, 15)
 </script>
 </html>
