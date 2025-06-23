@@ -83,7 +83,7 @@
         <span class="digitCnt color">:</span>
         <span class="miliseconds digitCnt color">000</span>
     </div>
-    <button class="endFireworks">Terminar celebracion</button>
+    <button class="endFireworks">Reanudar celebracion</button>
     <div class="fireworks"></div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
@@ -101,13 +101,26 @@
             element.addEventListener("click", ()=>this.toggle())
             this.element = element
             this.active = false
-            this.toggle()
+            this.lskey = "firework"
+            this.loadState()
+            this.saveState()
+        }
+        loadState(){
+            const state = localStorage.getItem(this.lskey)
+            console.log(state)
+            if(state === "true"){
+                this.toggle()
+            }
+        }
+        saveState(){
+            localStorage.setItem(this.lskey, this.active)
         }
         toggleVisibility(){
             return this.element.toggleAttribute("hidden")
         }
         toggle(){
             const element = this.element
+            this.active = !this.active
             if(this.active){
                 element.innerText = "Terminar celebracion"
                 this.fireworks.start()
@@ -115,7 +128,7 @@
                 element.innerText = "Reanudar celebracion"
                 this.fireworks.stop()
             }
-            this.active = !this.active
+            this.saveState()
             return this.active
         }
     }
@@ -141,8 +154,18 @@
         let localUnixTime = date.getTime()
         let newYearUnixTime = new Date(`${YYYY+1}-01-01T00:00:00`).getTime()
         let unixDiff = newYearUnixTime-localUnixTime
+
+        //test
+        //unixDiff -= (16520927581 - 1500000)
+
+        //active fireworks
+        if(unixDiff < 500 && !CH.active) CH.toggle()
+
+        //test
+        //if(unixDiff < 0) unixDiff = 0
+        
         let daysDiff = (unixDiff/1000/60/60/24).toFixed(8)
-            
+        
         if(h == 0){
             h = 12
         }
