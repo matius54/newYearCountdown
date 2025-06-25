@@ -107,7 +107,6 @@
         }
         loadState(){
             const state = localStorage.getItem(this.lskey)
-            console.log(state)
             if(state === "true"){
                 this.toggle()
             }
@@ -183,7 +182,7 @@
         let time = `${DD}/${MM}/${YYYY} ${h}${div}${m}${div}${s}${div}${ms} ${session}`
 
         days.update(Math.floor(unixDiff/86400000))
-        hours.update(padNumber(Math.floor(unixDiff/3600000)%60,2))
+        hours.update(padNumber(Math.floor(unixDiff/3600000)%24,2))
         minutes.update(padNumber(Math.floor(unixDiff/60000)%60,2))
         seconds.update(padNumber(Math.floor(unixDiff/1000)%60,2))
         miliseconds.innerText = padNumber(unixDiff%1000,3)
